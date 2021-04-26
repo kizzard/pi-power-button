@@ -10,7 +10,7 @@ LISTEN_PORT = 8888
 WEBHOOK_PATH = 'shutdown'
 
 class shutdownWebhook(BaseHTTPServer.BaseHTTPRequestHandler):
-	def do_GET(self):
+	def do_POST(self):
 		self.send_response(200)
 		if (self.path == '/' + WEBHOOK_PATH):
 			shutdown()
