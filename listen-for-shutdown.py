@@ -1,15 +1,22 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 import RPi.GPIO as GPIO
-import BaseHTTPServer
-import SocketServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.request import urlopen
 import subprocess
+import time
+import secrets
 
 SHUTDOWN_PIN = 3
 LISTEN_PORT = 8888
 WEBHOOK_PATH = 'shutdown'
 
-class shutdownWebhook(BaseHTTPServer.BaseHTTPRequestHandler):
+def executeHAShutdown(args=None):
+	urlopen(secrets.HAWebhookURL, b'')
+	time.sleep(20)
+	shutdown()
+
+class shutdownWebhook(BaseHTTPRequestHandler):
 	def do_POST(self):
 		self.send_response(200)
 		if (self.path == '/' + WEBHOOK_PATH):
@@ -20,7 +27,7 @@ def shutdown(args=None):
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SHUTDOWN_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.add_event_detect(SHUTDOWN_PIN, GPIO.FALLING, callback=shutdown)
+GPIO.add_event_detect(SHUTDOWN_PIN, GPIO.FALLING, callback=executeHAShutdown)
 
-httpd = BaseHTTPServer.HTTPServer(('',LISTEN_PORT), shutdownWebhook)
+httpd = HTTPServer(('',LISTEN_PORT), shutdownWebhook)
 httpd.serve_forever()
