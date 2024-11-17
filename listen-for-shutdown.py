@@ -19,6 +19,8 @@ def executeHAShutdown(args=None):
 class shutdownWebhook(BaseHTTPRequestHandler):
 	def do_POST(self):
 		self.send_response(200)
+		self.send_header("Content-type", "text/html")
+		self.end_headers()
 		if (self.path == '/' + WEBHOOK_PATH):
 			shutdown()
 
